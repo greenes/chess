@@ -1,0 +1,45 @@
+.ChessBoard {
+    display: flex;
+    flex-wrap: wrap;
+    width: 820px;
+
+    &-square {
+        border: 1px solid gray;
+        height: 100px;
+        width: 100px;
+
+        &[data-piece="white-knight"] {
+            background-image: url(asset_path('white_knight.png'));
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        &[data-piece="black-knight"] {
+            background-image: url(asset_path('black_knight.png'));
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        &[data-piece="white-pawn"] {
+            background-image: url(asset_path('white_pawn.png'));
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        &[data-piece="black-pawn"] {
+            background-image: url(asset_path('black_pawn.png'));
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        &.--white {
+            background-color: white;
+        }
+
+        &.--black {
+            background-color: #663300;
+        }
+    }
+}
