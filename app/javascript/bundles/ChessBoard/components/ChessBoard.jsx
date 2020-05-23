@@ -21,27 +21,40 @@ export default class ChessBoard extends React.Component {
         activeSquare: null,
         rows: [8,7,6,5,4,3,2,1],
         columns: ['a','b','c','d','e','f','g','h'],
+        possiblePositions: [],
         piecePostions: {
-            'a8': 'white-knight',
-            'h8': 'white-knight',
-            'a1': 'black-knight',
-            'h1': 'black-knight',
-            'a7': 'white-pawn',
-            'b7': 'white-pawn',
-            'c7': 'white-pawn',
-            'd7': 'white-pawn',
-            'e7': 'white-pawn',
-            'f7': 'white-pawn',
-            'g7': 'white-pawn',
-            'h7': 'white-pawn',
-            'a2': 'black-pawn',
-            'b2': 'black-pawn',
-            'c2': 'black-pawn',
-            'd2': 'black-pawn',
-            'e2': 'black-pawn',
-            'f2': 'black-pawn',
-            'g2': 'black-pawn',
-            'h2': 'black-pawn',
+            'e8': 'black-queen',
+            'd8': 'black-king',
+            'e1': 'white-queen',
+            'd1': 'white-king',
+            'b8': 'black-knight',
+            'g8': 'black-knight',
+            'a8': 'black-rook',
+            'h8': 'black-rook',
+            'a1': 'white-rook',
+            'h1': 'white-rook',
+            'b1': 'white-knight',
+            'g1': 'white-knight',
+            'c1': 'white-bishop',
+            'f1': 'white-bishop',
+            'c8': 'black-bishop',
+            'f8': 'black-bishop',
+            'a7': 'black-pawn',
+            'b7': 'black-pawn',
+            'c7': 'black-pawn',
+            'd7': 'black-pawn',
+            'e7': 'black-pawn',
+            'f7': 'black-pawn',
+            'g7': 'black-pawn',
+            'h7': 'black-pawn',
+            'a2': 'white-pawn',
+            'b2': 'white-pawn',
+            'c2': 'white-pawn',
+            'd2': 'white-pawn',
+            'e2': 'white-pawn',
+            'f2': 'white-pawn',
+            'g2': 'white-pawn',
+            'h2': 'white-pawn',
         }
     };
 
@@ -56,10 +69,23 @@ export default class ChessBoard extends React.Component {
   selectPiece = (e) =>{
     let newSelectedPiece = e.target.dataset["piece"]
     let newActiveSquare = e.target.dataset["square"]
+    let squareNum = parseInt(newActiveSquare.charAt(1));
+    let squareLetter = newActiveSquare.charAt(0);
+    let newPossiblePositions = []
+    
+    if (newSelectedPiece && newSelectedPiece.includes('white')) {
+        newPossiblePositions.push((squareNum + 1).toString() + squareLetter)
+        newPossiblePositions.push((squareNum + 2).toString() + squareLetter)
+    } else if (newSelectedPiece) {
+        newPossiblePositions.push((squareNum - 1).toString() + squareLetter)
+        newPossiblePositions.push((squareNum - 2).toString() + squareLetter)
+    }
+
     if (newSelectedPiece) {
         this.setState(state => ({
             selectedPiece: newSelectedPiece,
-            activeSquare: newActiveSquare
+            activeSquare: newActiveSquare,
+            possiblePositions: newPossiblePositions
         }));
     }
   }
@@ -90,6 +116,7 @@ export default class ChessBoard extends React.Component {
           Your turn, {this.state.turn}!
         </h3>
         <p>You selected the {this.state.selectedPiece} at {this.state.activeSquare}</p>
+        <p>You can move to {this.state.possiblePositions.join(' or ')}</p>
         <div className="ChessBoard">
             {squares}
         </div>
