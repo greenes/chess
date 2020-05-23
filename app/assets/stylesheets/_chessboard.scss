@@ -41,5 +41,9 @@
         &.--black {
             background-color: #663300;
         }
+
+        &.selected {
+            background-color: green;
+        }
     }
 }
