@@ -21,105 +21,230 @@ export default class ChessBoard extends React.Component {
         activeSquare: null,
         rows: [8,7,6,5,4,3,2,1],
         columns: ['a','b','c','d','e','f','g','h'],
-        possiblePositions: [],
-        piecePostions: {
-            'e8': 'black-queen',
-            'd8': 'black-king',
-            'e1': 'white-queen',
-            'd1': 'white-king',
-            'b8': 'black-knight',
-            'g8': 'black-knight',
-            'a8': 'black-rook',
-            'h8': 'black-rook',
-            'a1': 'white-rook',
-            'h1': 'white-rook',
-            'b1': 'white-knight',
-            'g1': 'white-knight',
-            'c1': 'white-bishop',
-            'f1': 'white-bishop',
-            'c8': 'black-bishop',
-            'f8': 'black-bishop',
-            'a7': 'black-pawn',
-            'b7': 'black-pawn',
-            'c7': 'black-pawn',
-            'd7': 'black-pawn',
-            'e7': 'black-pawn',
-            'f7': 'black-pawn',
-            'g7': 'black-pawn',
-            'h7': 'black-pawn',
-            'a2': 'white-pawn',
-            'b2': 'white-pawn',
-            'c2': 'white-pawn',
-            'd2': 'white-pawn',
-            'e2': 'white-pawn',
-            'f2': 'white-pawn',
-            'g2': 'white-pawn',
-            'h2': 'white-pawn',
+        capturedPieces: [],
+        possibleMoves: [],
+        piecePositions: {
+					'e8': 'black-queen',
+					'd8': 'black-king',
+					'e1': 'white-queen',
+					'd1': 'white-king',
+					'b8': 'black-knight',
+					'g8': 'black-knight',
+					'a8': 'black-rook',
+					'h8': 'black-rook',
+					'a1': 'white-rook',
+					'h1': 'white-rook',
+					'b1': 'white-knight',
+					'g1': 'white-knight',
+					'c1': 'white-bishop',
+					'f1': 'white-bishop',
+					'c8': 'black-bishop',
+					'f8': 'black-bishop',
+					'a7': 'black-pawn',
+					'b7': 'black-pawn',
+					'c7': 'black-pawn',
+					'd7': 'black-pawn',
+					'e7': 'black-pawn',
+					'f7': 'black-pawn',
+					'g7': 'black-pawn',
+					'h7': 'black-pawn',
+					'a2': 'white-pawn',
+					'b2': 'white-pawn',
+					'c2': 'white-pawn',
+					'd2': 'white-pawn',
+					'e2': 'white-pawn',
+					'f2': 'white-pawn',
+					'g2': 'white-pawn',
+					'h2': 'white-pawn',
         }
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.selectPiece = this.selectPiece.bind(this);
-  }
+    this.selectSquare = this.selectSquare.bind(this);
+	}
+	
+	completeTurn = () => {
+		this.setState(state => ({
+			selectedPiece: null,
+			activeSquare: null,
+			possibleMoves: [],
+			turn: (this.state.turn === 'white' ? 'black' : 'white'),
+		}));
+	}
+	
+	calculatePossibleMoves = (piece, square) => {
+    let squareNum = parseInt(square.charAt(1));
+		let squareLetter = square.charAt(0);
+		let newPossibleMoves = [];
+		const columns = this.state.columns;
 
-  updateBoard = (turn) => {
-    this.setState({ turn });
-  };
+		switch (piece) {
+			case 'black-pawn':
+				// If one space forward is not occupied, add to possible moves
+				if (!this.state.piecePositions[squareLetter + (squareNum - 1).toString()]) {
+					newPossibleMoves.push(squareLetter + (squareNum - 1).toString());
+				}
 
-  selectPiece = (e) =>{
-    let newSelectedPiece = e.target.dataset["piece"]
-    let newActiveSquare = e.target.dataset["square"]
-    let squareNum = parseInt(newActiveSquare.charAt(1));
-    let squareLetter = newActiveSquare.charAt(0);
-    let newPossiblePositions = []
+				// If the pawn has not moved, he can move 2 spaces if the space is not occupied
+				if ((!this.state.piecePositions[squareLetter + (squareNum - 2).toString()]) && squareNum == 7) {
+					newPossibleMoves.push(squareLetter + (squareNum - 2).toString());
+				}
+
+				// If opposing piece is in capturable space, add to possible moves
+				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString()]) {
+					newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString());
+				}
+
+				// If opposing piece is in capturable space, add to possible moves
+				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString()]) {
+					newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString());
+				}
+				break;
+			case 'white-pawn':
+				// If one space forward is not occupied, add to possible moves
+				if (!this.state.piecePositions[squareLetter + (squareNum + 1).toString()]) {
+					newPossibleMoves.push(squareLetter + (squareNum + 1).toString());
+				}
+
+				// If the pawn has not moved, he can move 2 spaces if the space is not occupied
+				if ((!this.state.piecePositions[squareLetter + (squareNum + 2).toString()]) && squareNum == 2) {
+					newPossibleMoves.push(squareLetter + (squareNum + 2).toString());
+				}
+
+				// If opposing piece is in capturable space, add to possible moves
+				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString()]) {
+					newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString());
+				}
+
+				// If opposing piece is in capturable space, add to possible moves
+				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString()]) {
+					newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString());
+				}
+				break;
+		}
+		
+
+		this.setState(state => ({
+			possibleMoves: newPossibleMoves,
+		}));
+	}
+
+  selectSquare = (e) =>{
+    let newSelectedPiece = e.target.dataset["piece"];
+    let newActiveSquare = e.target.dataset["square"];
     
-    if (newSelectedPiece && newSelectedPiece.includes('white')) {
-        newPossiblePositions.push((squareNum + 1).toString() + squareLetter)
-        newPossiblePositions.push((squareNum + 2).toString() + squareLetter)
-    } else if (newSelectedPiece) {
-        newPossiblePositions.push((squareNum - 1).toString() + squareLetter)
-        newPossiblePositions.push((squareNum - 2).toString() + squareLetter)
-    }
-
     if (newSelectedPiece) {
-        this.setState(state => ({
-            selectedPiece: newSelectedPiece,
-            activeSquare: newActiveSquare,
-            possiblePositions: newPossiblePositions
-        }));
-    }
-  }
-  
+    // If the selected square contatins a piece
+
+			if (newSelectedPiece.includes(this.state.turn)) {
+				// If the piece belongs to current player, it can be selected
+				this.setState(state => ({
+						selectedPiece: newSelectedPiece,
+						activeSquare: newActiveSquare,
+				}));
+				// Calculate the possible moves for this piece
+				this.calculatePossibleMoves(newSelectedPiece, newActiveSquare);
+			} else if (this.state.selectedPiece && this.state.possibleMoves.includes(newActiveSquare)) {
+				// If the piece in the square belongs to the opposing player 
+				// and a piece has been selected
+				// and the square is in the list of possible positions
+				this.setState(prevState => {
+						const { piecePositions } = prevState;
+					
+						piecePositions[newActiveSquare] = this.state.selectedPiece;
+						delete piecePositions[this.state.activeSquare];
+						
+						return { piecePositions };
+					});
+
+				this.setState(prevState => {
+					const { capturedPieces } = prevState;
+					
+					capturedPieces.push(newSelectedPiece);
+					
+					return { capturedPieces };
+				});
+				this.completeTurn();
+			}
+    } else if (this.state.possibleMoves.includes(newActiveSquare)) {
+    	// If the selected square is empty
+			// and the square is in the list of possible moves
+			this.setState(prevState => {
+				const { piecePositions } = prevState;
+			
+				piecePositions[newActiveSquare] = this.state.selectedPiece;
+				delete piecePositions[this.state.activeSquare];
+				
+				return { piecePositions };
+			});
+			this.completeTurn();
+			
+		}
+	}
 
   render() {
     const squares = []
+    const captureWhitePieces = []
+		const captureBlackPieces = []
+		
     for (const [index, row] of this.state.rows.entries()) {
-        for (const [i, column] of this.state.columns.entries()) {
-            squares.push(
-                <div className={ classNames({
-                    'ChessBoard-square': true,
-                    '--black': (row % 2) && ['a','c','e','g'].includes(column) || (!(row % 2) && ['b','d','f','h'].includes(column)),
-                    '--white': (row % 2) && ['b','d','f','h'].includes(column) || !(row % 2) && ['a','c','e','g'].includes(column),
-                    'selected' : this.state.activeSquare === column + row
-                }) }  
-                    onClick={this.selectPiece} 
-                    data-square={column + row} 
-                    data-piece={this.state.piecePostions[column + row]}
-                    key={column + row}></div>
-            )
-        }
-    }
+			for (const [i, column] of this.state.columns.entries()) {
+				squares.push(
+					<div className={ classNames({
+						'ChessBoard-square': true,
+						'ChessBoard-piece': true,
+						'--black': (row % 2) && ['a','c','e','g'].includes(column) || (!(row % 2) && ['b','d','f','h'].includes(column)),
+						'--white': (row % 2) && ['b','d','f','h'].includes(column) || !(row % 2) && ['a','c','e','g'].includes(column),
+						'selected' : this.state.activeSquare === column + row
+					}) }  
+						onClick={this.selectSquare} 
+						data-square={column + row} 
+						data-piece={this.state.piecePositions[column + row]}
+						key={column + row}></div>
+			)
+			}
+		}
+		
+		for (const [index, piece] of this.state.capturedPieces.entries()) {
+			if (piece.includes('white')) {
+				captureWhitePieces.push(
+					<li className="ChessBoard-piece ChessBoard-capturedPiece"
+							data-piece={piece}
+							key={piece + index}></li>
+				)
+			} else {
+				captureBlackPieces.push(
+					<li className="ChessBoard-piece ChessBoard-capturedPiece"
+							data-piece={piece}
+							key={piece + index}></li>
+				)
+			}
+		}
+
+		let selectionNotice = ""
+		if (this.state.selectedPiece) {
+			selectionNotice = 'You selected the ' + this.state.selectedPiece + ' at ' + this.state.activeSquare;
+		} else {
+			selectionNotice = 'Select a piece!';
+		}
+		
     return (
-        
       <div>
-        <h3>
-          Your turn, {this.state.turn}!
+        <h3 className="ChessBoard-info">
+          Your turn, {this.state.turn}! {selectionNotice}
         </h3>
-        <p>You selected the {this.state.selectedPiece} at {this.state.activeSquare}</p>
-        <p>You can move to {this.state.possiblePositions.join(' or ')}</p>
+        <p className="ChessBoard-info">You can move to {this.state.possibleMoves.join(' or ')}</p>
         <div className="ChessBoard">
             {squares}
         </div>
+				<div className="ChessBoard-capturedPiece-wrap">
+					<ul>
+						{captureBlackPieces}
+					</ul>
+					<ul>
+						{captureWhitePieces}
+					</ul>
+				</div>
       </div>
     );
   }

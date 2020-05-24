@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
 	def index
-    @turn = { turn: "White" }
+    @turn = { turn: "white" }
 	end
 end
