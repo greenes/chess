@@ -77,55 +77,91 @@ export default class ChessBoard extends React.Component {
 		let squareLetter = square.charAt(0);
 		let newPossibleMoves = [];
 		const columns = this.state.columns;
+		const rows = this.state.rows;
 
-		switch (piece) {
-			case 'black-pawn':
-				// If one space forward is not occupied, add to possible moves
-				if (!this.state.piecePositions[squareLetter + (squareNum - 1).toString()]) {
-					newPossibleMoves.push(squareLetter + (squareNum - 1).toString());
-				}
+		if (piece == 'black-pawn') {
+			// If one space forward is not occupied, add to possible moves
+			if (!this.state.piecePositions[squareLetter + (squareNum - 1).toString()]) {
+				newPossibleMoves.push(squareLetter + (squareNum - 1).toString());
+			}
 
-				// If the pawn has not moved, he can move 2 spaces if the space is not occupied
-				if ((!this.state.piecePositions[squareLetter + (squareNum - 2).toString()]) && squareNum == 7) {
-					newPossibleMoves.push(squareLetter + (squareNum - 2).toString());
-				}
+			// If the pawn has not moved, he can move 2 spaces if the space is not occupied
+			if ((!this.state.piecePositions[squareLetter + (squareNum - 2).toString()]) && squareNum == 7) {
+				newPossibleMoves.push(squareLetter + (squareNum - 2).toString());
+			}
 
-				// If opposing piece is in capturable space, add to possible moves
-				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString()]) {
-					newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString());
-				}
+			// If opposing piece is in capturable space, add to possible moves
+			if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString()]) {
+				newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum - 1).toString());
+			}
 
-				// If opposing piece is in capturable space, add to possible moves
-				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString()]) {
-					newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString());
-				}
-				break;
-			case 'white-pawn':
-				// If one space forward is not occupied, add to possible moves
-				if (!this.state.piecePositions[squareLetter + (squareNum + 1).toString()]) {
-					newPossibleMoves.push(squareLetter + (squareNum + 1).toString());
-				}
+			// If opposing piece is in capturable space, add to possible moves
+			if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString()]) {
+				newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum - 1).toString());
+			}
+		} else if (piece == 'white-pawn') {
+			// If one space forward is not occupied, add to possible moves
+			if (!this.state.piecePositions[squareLetter + (squareNum + 1).toString()]) {
+				newPossibleMoves.push(squareLetter + (squareNum + 1).toString());
+			}
 
-				// If the pawn has not moved, he can move 2 spaces if the space is not occupied
-				if ((!this.state.piecePositions[squareLetter + (squareNum + 2).toString()]) && squareNum == 2) {
-					newPossibleMoves.push(squareLetter + (squareNum + 2).toString());
-				}
+			// If the pawn has not moved, he can move 2 spaces if the space is not occupied
+			if ((!this.state.piecePositions[squareLetter + (squareNum + 2).toString()]) && squareNum == 2) {
+				newPossibleMoves.push(squareLetter + (squareNum + 2).toString());
+			}
 
-				// If opposing piece is in capturable space, add to possible moves
-				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString()]) {
-					newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString());
-				}
+			// If opposing piece is in capturable space, add to possible moves
+			if (this.state.piecePositions[columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString()]) {
+				newPossibleMoves.push(columns[columns.indexOf(squareLetter) + 1] + (squareNum + 1).toString());
+			}
 
-				// If opposing piece is in capturable space, add to possible moves
-				if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString()]) {
-					newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString());
+			// If opposing piece is in capturable space, add to possible moves
+			if (this.state.piecePositions[columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString()]) {
+				newPossibleMoves.push(columns[columns.indexOf(squareLetter) - 1] + (squareNum + 1).toString());
+			}
+		} else if (piece.includes('rook')) {
+			let leftHorizontalMoves = columns.slice(columns.indexOf(columns[columns.indexOf(squareLetter) + 1]));
+			let rightHorizontalMoves = columns.slice(0, columns.indexOf(squareLetter)).reverse();
+			
+			for (const [index, column] of leftHorizontalMoves.entries()) {
+				let horzMove = column + squareNum;
+				if (!this.state.piecePositions[horzMove] || !this.state.piecePositions[horzMove].includes(this.state.turn)) {
+					newPossibleMoves.push(horzMove);
+				} else {
+					break;
 				}
-				break;
+			}
+			for (const [index, column] of rightHorizontalMoves.entries()) {
+				let horzMove = column + squareNum;
+				if (!this.state.piecePositions[horzMove] || !this.state.piecePositions[horzMove].includes(this.state.turn)) {
+					newPossibleMoves.push(horzMove);
+				} else {
+					break;
+				}
+			}
+
+			let forwardVerticalMoves = [1,2,3,4,5,6,7,8].slice(squareNum);
+			let backwardVerticallMoves = rows.slice(rows.indexOf(squareNum) + 1);
+			for (const [index, row] of forwardVerticalMoves.entries()) {
+				let vertMove = squareLetter + row;
+				if (!this.state.piecePositions[vertMove] || !this.state.piecePositions[vertMove].includes(this.state.turn)) {
+					newPossibleMoves.push(vertMove);
+				} else {
+					break;
+				}
+			}
+			for (const [index, row] of backwardVerticallMoves.entries()) {
+				let vertMove = squareLetter + row;
+				if (!this.state.piecePositions[vertMove] || !this.state.piecePositions[vertMove].includes(this.state.turn)) {
+					newPossibleMoves.push(vertMove);
+				} else {
+					break;
+				}
+			}
 		}
-		
 
 		this.setState(state => ({
-			possibleMoves: newPossibleMoves,
+			possibleMoves: newPossibleMoves.flat(),
 		}));
 	}
 
