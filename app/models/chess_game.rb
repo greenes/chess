@@ -1,0 +1,2 @@
+class ChessGame < ApplicationRecord
+end

@@ -1,5 +1,11 @@
 class HomeController < ApplicationController
 	def index
-    @turn = { turn: "white" }
+		@game = ChessGame.last
+		@props = {
+			gameId: @game.id,
+			turn: @game.turn,
+			piecePositions: @game.piece_positions,
+			capturedPieces: @game.captured_pieces
+		}
 	end
 end

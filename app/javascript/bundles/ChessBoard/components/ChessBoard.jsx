@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames'
+import axios from 'axios';
 
 export default class ChessBoard extends React.Component {
   static propTypes = {
     turn: PropTypes.string.isRequired, // this is passed from the Rails view
+    gameId: PropTypes.number.isRequired, // this is passed from the Rails view
+    capturedPieces: PropTypes.array.isRequired, // this is passed from the Rails view
+    piecePositions: PropTypes.object.isRequired, // this is passed from the Rails view
   };
 
   /**
@@ -16,49 +20,17 @@ export default class ChessBoard extends React.Component {
     // How to set initial state in ES6 class syntax
     // https://reactjs.org/docs/state-and-lifecycle.html#adding-local-state-to-a-class
     this.state = { 
+        gameId: this.props.gameId.toString(),
         turn: this.props.turn,
-        selectedPiece: null,
-        activeSquare: null,
+        piecePositions: this.props.piecePositions,
+        capturedPieces: this.props.capturedPieces,
         rows: [8,7,6,5,4,3,2,1],
         columns: ['a','b','c','d','e','f','g','h'],
-        capturedPieces: [],
-        possibleMoves: [],
-        piecePositions: {
-					'd8': 'black-queen',
-					'e8': 'black-king',
-					'd1': 'white-queen',
-					'e1': 'white-king',
-					'b8': 'black-knight',
-					'g8': 'black-knight',
-					'a8': 'black-rook',
-					'h8': 'black-rook',
-					'a1': 'white-rook',
-					'h1': 'white-rook',
-					'b1': 'white-knight',
-					'g1': 'white-knight',
-					'c1': 'white-bishop',
-					'f1': 'white-bishop',
-					'c8': 'black-bishop',
-					'f8': 'black-bishop',
-					'a7': 'black-pawn',
-					'b7': 'black-pawn',
-					'c7': 'black-pawn',
-					'd7': 'black-pawn',
-					'e7': 'black-pawn',
-					'f7': 'black-pawn',
-					'g7': 'black-pawn',
-					'h7': 'black-pawn',
-					'a2': 'white-pawn',
-					'b2': 'white-pawn',
-					'c2': 'white-pawn',
-					'd2': 'white-pawn',
-					'e2': 'white-pawn',
-					'f2': 'white-pawn',
-					'g2': 'white-pawn',
-					'h2': 'white-pawn',
-        }
+        selectedPiece: null,
+        activeSquare: null,
+        possibleMoves: []
     };
-
+		
     // This binding is necessary to make `this` work in the callback
     this.selectSquare = this.selectSquare.bind(this);
 	}
@@ -69,7 +41,10 @@ export default class ChessBoard extends React.Component {
 			activeSquare: null,
 			possibleMoves: [],
 			turn: (this.state.turn === 'white' ? 'black' : 'white'),
-		}));
+		}), 
+		() => {
+			this.saveGame();
+		});
 	}
 	
 	calculatePossibleMoves = (piece, square) => {
@@ -178,7 +153,7 @@ export default class ChessBoard extends React.Component {
 		}));
 	}
 
-  selectSquare = (e) =>{
+  selectSquare = (e) => {
     let newSelectedPiece = e.target.dataset["piece"];
 		let newActiveSquare = e.target.dataset["square"];
 		
@@ -229,6 +204,20 @@ export default class ChessBoard extends React.Component {
 			this.completeTurn();
 			
 		}
+	}
+
+	saveGame = () => {
+		axios.put('/chess_games/' + this.state.gameId.toString(), {
+			id: this.state.gameId,
+			piece_positions: this.state.piecePositions,
+			captured_pieces: this.state.capturedPieces, 
+			turn: this.state.turn 
+		})
+		.then((response) => {
+			console.log(response);
+		}, (error) => {
+			console.log(error);
+		});
 	}
 
   render() {
