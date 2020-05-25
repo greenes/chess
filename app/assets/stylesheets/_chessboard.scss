@@ -1,8 +1,27 @@
 .ChessBoard {
+	$black: #292929;
+	$red: #ee2211;
+	border: 2px solid $black;
+	border-radius: 3px;
 	display: flex;
 	flex-wrap: wrap;
 	margin: auto;
-	width: 820px;
+	position: relative;
+	width: 850px;
+
+	&:before {
+		background: none;
+		border: 5px solid $black;
+		border-radius: 3px;
+		content: "";
+		display: block;
+		position: absolute;
+		top: -13px;
+		left: -13px;
+		right: -13px;
+		bottom: -13px;
+		pointer-events: none;
+	}
 
 	&-info {
 		font-family: 'EB Garamond', serif;
@@ -10,26 +29,51 @@
 	}
 
 	&-square {
-		border: 1px solid gray;
 		height: 100px;
-		width: 100px;
+		width: 12.26%;
 
 		&.--white {
-			background-color: white;
+			background-color: #fff;
 		}
 
 		&.--black {
-			background-color: #663300;
+			position: relative;
+
+			&:nth-child(odd) {
+				&:before {
+					background-image: linear-gradient(45deg, #292929 16.67%, #ffffff 16.67%, #ffffff 50%, #292929 50%, #292929 66.67%, #ffffff 66.67%, #ffffff 100%);
+					background-size: 8.49px 8.49px;
+					content: '';
+					display: block;
+					height: 100%;
+					position: relative;
+					z-index: -1;
+				}
+			}
+
+			&:nth-child(even) {
+				&:before {
+					background-image: linear-gradient(135deg, #292929 16.67%, #ffffff 16.67%, #ffffff 50%, #292929 50%, #292929 66.67%, #ffffff 66.67%, #ffffff 100%);
+					background-size: 8.49px 8.49px;
+					content: '';
+					display: block;
+					height: 100%;
+					position: relative;
+					z-index: -1;
+				}
+				
+			}
 		}
 
 		&.selected {
-			background-color: green;
+			background-color: $red;
 		}
 	}
 
 	&-piece {
 		background-size: contain;
 		background-repeat: no-repeat;
+		border: 1px solid transparent;
 
 		&[data-piece="white-queen"] {
 			background-image: url(asset_path('white-queen.png'));
