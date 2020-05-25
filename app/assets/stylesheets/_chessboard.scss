@@ -41,8 +41,9 @@
 
 			&:nth-child(odd) {
 				&:before {
-					background-image: linear-gradient(45deg, #292929 16.67%, #ffffff 16.67%, #ffffff 50%, #292929 50%, #292929 66.67%, #ffffff 66.67%, #ffffff 100%);
-					background-size: 8.49px 8.49px;
+					background-image: linear-gradient(45deg, #292929 25%, #ffffff 25%, #ffffff 50%, #292929 50%, #292929 75%, #ffffff 75%, #ffffff 100%);
+					background-size: 5.66px 5.66px;
+					border-radius: 3px;
 					content: '';
 					display: block;
 					height: 100%;
@@ -53,8 +54,9 @@
 
 			&:nth-child(even) {
 				&:before {
-					background-image: linear-gradient(135deg, #292929 16.67%, #ffffff 16.67%, #ffffff 50%, #292929 50%, #292929 66.67%, #ffffff 66.67%, #ffffff 100%);
-					background-size: 8.49px 8.49px;
+					background-image: linear-gradient(135deg, #292929 25%, #ffffff 25%, #ffffff 50%, #292929 50%, #292929 75%, #ffffff 75%, #ffffff 100%);
+					background-size: 5.66px 5.66px;
+					border-radius: 3px;
 					content: '';
 					display: block;
 					height: 100%;

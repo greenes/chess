@@ -123,6 +123,7 @@ export default class ChessBoard extends React.Component {
 			let leftHorizontalMoves = columns.slice(columns.indexOf(columns[columns.indexOf(squareLetter) + 1]));
 			let rightHorizontalMoves = columns.slice(0, columns.indexOf(squareLetter)).reverse();
 			
+			// Check possible horizontal moves and add to possible moves until we find an occupied space
 			for (const [index, column] of leftHorizontalMoves.entries()) {
 				let horzMove = column + squareNum;
 				if (!this.state.piecePositions[horzMove] || !this.state.piecePositions[horzMove].includes(this.state.turn)) {
@@ -140,6 +141,7 @@ export default class ChessBoard extends React.Component {
 				}
 			}
 
+			// Check possible vetical moves and add to possible moves until we find an occupied space
 			let forwardVerticalMoves = [1,2,3,4,5,6,7,8].slice(squareNum);
 			let backwardVerticallMoves = rows.slice(rows.indexOf(squareNum) + 1);
 			for (const [index, row] of forwardVerticalMoves.entries()) {
@@ -158,6 +160,17 @@ export default class ChessBoard extends React.Component {
 					break;
 				}
 			}
+		} else {
+			for (const [index, row] of this.state.rows.entries()) {
+				for (const [i, column] of this.state.columns.entries()) {
+					let space = column + row;
+					if (this.state.piecePositions[space] && !this.state.piecePositions[space].includes(this.state.turn)) {
+						newPossibleMoves.push(column + row);
+					} else {
+						newPossibleMoves.push(column + row);
+					}
+				}
+			}
 		}
 
 		this.setState(state => ({
@@ -167,8 +180,8 @@ export default class ChessBoard extends React.Component {
 
   selectSquare = (e) =>{
     let newSelectedPiece = e.target.dataset["piece"];
-    let newActiveSquare = e.target.dataset["square"];
-    
+		let newActiveSquare = e.target.dataset["square"];
+		
     if (newSelectedPiece) {
     // If the selected square contatins a piece
 
@@ -269,7 +282,6 @@ export default class ChessBoard extends React.Component {
         <h3 className="ChessBoard-info">
           Your turn, {this.state.turn}! {selectionNotice}
         </h3>
-        <p className="ChessBoard-info">You can move to {this.state.possibleMoves.join(' or ')}</p>
         <div className="ChessBoard">
             {squares}
         </div>
