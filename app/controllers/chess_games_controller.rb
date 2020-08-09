@@ -35,7 +35,7 @@ class ChessGamesController < ApplicationController
   private
 
   def chess_game_params
-    params.require(:chess_game).permit(:id, :turn, :piece_positions => {}, :captured_pieces => [])
+    params.require(:chess_game).permit(:id, :turn, :piece_positions => {}, :captured_pieces => [], :past_moves => [:turn, :piece, :startPostion, :endPosition])
   end
 
 end

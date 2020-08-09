@@ -9,6 +9,7 @@ export default class ChessBoard extends React.Component {
     gameId: PropTypes.number.isRequired, // this is passed from the Rails view
     capturedPieces: PropTypes.array.isRequired, // this is passed from the Rails view
     piecePositions: PropTypes.object.isRequired, // this is passed from the Rails view
+    pastMoves: PropTypes.array.isRequired, // this is passed from the Rails view
   };
 
   /**
@@ -24,11 +25,12 @@ export default class ChessBoard extends React.Component {
         turn: this.props.turn,
         piecePositions: this.props.piecePositions,
         capturedPieces: this.props.capturedPieces,
+        pastMoves: this.props.pastMoves,
         rows: [8,7,6,5,4,3,2,1],
         columns: ['a','b','c','d','e','f','g','h'],
         selectedPiece: null,
         activeSquare: null,
-        possibleMoves: []
+				possibleMoves: []
     };
 		
     // This binding is necessary to make `this` work in the callback
@@ -156,6 +158,7 @@ export default class ChessBoard extends React.Component {
   selectSquare = (e) => {
     let newSelectedPiece = e.target.dataset["piece"];
 		let newActiveSquare = e.target.dataset["square"];
+		console.log("select square");
 		
     if (newSelectedPiece) {
     // If the selected square contatins a piece
@@ -165,6 +168,7 @@ export default class ChessBoard extends React.Component {
 				this.setState(state => ({
 						selectedPiece: newSelectedPiece,
 						activeSquare: newActiveSquare,
+						fullMove: {"turn": this.state.turn, "piece": {newSelectedPiece}, },
 				}));
 				// Calculate the possible moves for this piece
 				this.calculatePossibleMoves(newSelectedPiece, newActiveSquare);
@@ -188,6 +192,16 @@ export default class ChessBoard extends React.Component {
 					
 					return { capturedPieces };
 				});
+
+				this.setState(prevState => {
+					const { pastMoves } = prevState;
+					
+					pastMoves.push({"turn": this.state.turn, "piece": this.state.selectedPiece, "startPostion": this.state.activeSquare, "endPosition": newActiveSquare});
+					
+					return { pastMoves };
+				});
+
+				console.log(this.state.pastMoves);
 				this.completeTurn();
 			}
     } else if (this.state.possibleMoves.includes(newActiveSquare)) {
@@ -201,6 +215,16 @@ export default class ChessBoard extends React.Component {
 				
 				return { piecePositions };
 			});
+
+			this.setState(prevState => {
+				const { pastMoves } = prevState;
+				
+				pastMoves.push({"turn": this.state.turn, "piece": this.state.selectedPiece, "startPostion": this.state.activeSquare, "endPosition": newActiveSquare});
+				
+				return { pastMoves };
+			});
+
+			console.log(this.state.pastMoves);
 			this.completeTurn();
 			
 		}
@@ -211,7 +235,8 @@ export default class ChessBoard extends React.Component {
 			id: this.state.gameId,
 			piece_positions: this.state.piecePositions,
 			captured_pieces: this.state.capturedPieces, 
-			turn: this.state.turn 
+			turn: this.state.turn,
+			past_moves: this.state.pastMoves
 		})
 		.then((response) => {
 			console.log(response);
@@ -224,6 +249,7 @@ export default class ChessBoard extends React.Component {
     const squares = []
     const captureWhitePieces = []
 		const captureBlackPieces = []
+		const pastMovesList = []
 		
     for (const [index, row] of this.state.rows.entries()) {
 			for (const [i, column] of this.state.columns.entries()) {
@@ -259,6 +285,14 @@ export default class ChessBoard extends React.Component {
 			}
 		}
 
+		for (const [index, move] of this.state.pastMoves.entries()) {
+			pastMovesList.push(
+			<li class="ChessBoard-move"
+					key={index}>
+						{index + 1}. {move.turn} moved the {move.piece} from {move.startPostion} to {move.endPosition}.</li>
+			)
+		}
+
 		let selectionNotice = ""
 		if (this.state.selectedPiece) {
 			selectionNotice = 'You selected the ' + this.state.selectedPiece + ' at ' + this.state.activeSquare;
@@ -280,6 +314,11 @@ export default class ChessBoard extends React.Component {
 					</ul>
 					<ul>
 						{captureWhitePieces}
+					</ul>
+				</div>
+				<div>
+					<ul className="ChessBoard-move-list">
+						{pastMovesList}
 					</ul>
 				</div>
       </div>

@@ -5,7 +5,8 @@ class HomeController < ApplicationController
 			gameId: @game.id,
 			turn: @game.turn,
 			piecePositions: @game.piece_positions,
-			capturedPieces: @game.captured_pieces
+			capturedPieces: @game.captured_pieces,
+			pastMoves: @game.past_moves
 		}
 	end
 end
